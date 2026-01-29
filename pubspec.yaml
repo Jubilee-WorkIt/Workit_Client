@@ -1,0 +1,70 @@
+name: workit_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  google_maps_flutter: ^2.5.3
+  
+  # [수정] 의존성 해결을 위해 최신 버전으로 업데이트
+  intl: ^0.20.2 
+  
+  # 이미지 피커 (앨범/카메라 연동)
+  image_picker: ^1.0.7
+  
+  # Firebase 관련 (최신 패키지들과 호환성 유지)
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+  firebase_ui_oauth_google: ^1.4.3
+  
+  # 네트워크 및 인증
+  http: ^1.1.0
+  google_sign_in: ^6.1.4
+  
+  # UI 및 디자인 유틸리티
+  flutter_native_splash: ^2.4.7
+  flutter_svg: ^2.0.10+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+
+flutter:
+  uses-material-design: true
+
+  # 이미지 및 아이콘 자산 설정
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  # Pretendard 폰트 설정
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Pretendard-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Pretendard-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Pretendard-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Pretendard-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Pretendard-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Pretendard-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Pretendard-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Pretendard-Black.ttf
+          weight: 900
