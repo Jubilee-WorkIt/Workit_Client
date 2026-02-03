@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_map/flutter_map.dart';
+// ignore: depend_on_referenced_packages
 import 'package:latlong2/latlong.dart';
 
 class SeekerHomeJobDetailScreen extends StatefulWidget {
@@ -11,9 +13,6 @@ class SeekerHomeJobDetailScreen extends StatefulWidget {
 
 class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
   bool isFavorite = false;
-
-  final double topSpacing = 10.0; 
-  final double contentTopPadding = 70.0; 
 
   final String uploadDateTime = '2026.01.01 12:00';
   final String locationAddress = 'Preston 77 St Georges Rd, Preston VIC 3072, Australia';
@@ -28,57 +27,42 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
 
     return Scaffold(
       backgroundColor: darkBgColor,
+      // --- 요청하신 AppBar 스타일 적용 ---
+      appBar: AppBar(
+        backgroundColor: darkBgColor,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Image.asset('assets/images/chats_arrow_left.png', width: 24, height: 24),
+          ),
+        ),
+        title: const Text(
+          "Job Posting", // 타이틀 수정 (Region Settings -> Job Posting)
+          style: TextStyle(
+            color: Colors.white, 
+            fontSize: 18, 
+            fontWeight: FontWeight.w600, 
+            fontFamily: 'Pretendard',
+            letterSpacing: -0.5,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          // 하트 버튼을 AppBar 우측에 배치
+          IconButton(
+            onPressed: () => setState(() => isFavorite = !isFavorite),
+            icon: isFavorite
+                ? Image.asset('assets/images/heart_select.png', width: 22, height: 22)
+                : Image.asset('assets/images/heart.png', width: 22, height: 22),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: topSpacing),
-            // 1 & 2. 이미지 에셋이 적용된 커스텀 AppBar
-            Container(
-              width: double.infinity,
-              height: 54, 
-              color: pointBlue,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                children: [
-                  IconButton(
-                    // --- 수정 1: 화살표 이미지로 변경 ---
-                    icon: Image.asset(
-                      'assets/images/arrow_left.png', 
-                      width: 24, 
-                      height: 24,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  // const SizedBox(width: 12),
-                  const Text(
-                    'Job Posting',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
-
-                  IconButton(
-                    onPressed: () => setState(() => isFavorite = !isFavorite),
-                    icon: isFavorite
-                        ? Image.asset(
-                            'assets/images/heart_select.png', // 채워진 하트 이미지 경로
-                            width: 22,
-                            height: 22,
-                          )
-                        : Image.asset(
-                            'assets/images/heart.png', // 빈 하트 이미지 경로
-                            width: 22,
-                            height: 22,
-                          ),
-                        ),  
-                      ],
-                    ),
-                  ),
-            
             Expanded(
               child: Stack(
                 children: [
@@ -92,18 +76,24 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
                           children: [
                             _statusTag('NEW', const Color(0xFF00A3FF)),
                             Text(uploadDateTime, style: const TextStyle(
-                              color: Color(0xFFDEE3E3),
-                              fontSize: 11,
+                              color: Colors.white,
+                              fontSize: 10,
                               fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: -0.2,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2, // 자간 조정
                             )),
                           ],
                         ),
                         const SizedBox(height: 16),
                         const Text(
                           'Posting title',
-                          style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.1,
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Row(
@@ -120,12 +110,12 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
                                 fontSize: 16,
                                 fontFamily: 'Pretendard',
                                 fontWeight: FontWeight.w400,
-                                ),
+                                letterSpacing: 0.4,
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 24),
-                        // 가로 스크롤 해시태그
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
@@ -136,18 +126,20 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
                             )).toList(),
                           ),
                         ),
-                        const SizedBox(height: 28),
-                        const Divider(color: Color(0xFFDEE3E3), thickness: 1),
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 27),
+                        const Divider(color: Color(0xFFE4E4E4), thickness: 1),
+                        const SizedBox(height: 20),
                         _sectionTitle('Detailed Information'),
                         const Text(
-                          'Lorem ipsum dolor sit amet consectetur. Diam a vitae dolor sollicitudin. Viverra dui neque vitae cras nec congue faucibus.',
+                          'Lorem ipsum dolor sit amet consectetur. Diam a vitae dolor \nsollicitudin. Viverra dui neque vitae cras nec congue \nfaucibus. Id tellus cursus adipiscing nam maecenas.',
                           style: TextStyle(
-                            color:  Color(0xFFDEE3E3),
+                            color: Color(0xFFDEE3E3),
                             fontSize: 13,
                             fontFamily: 'Pretendard',
                             fontWeight: FontWeight.w400,
-                            ),
+                            height: 1.5, // 행간 확보
+                            letterSpacing: -0.3,
+                          ),
                         ),
                         const SizedBox(height: 32),
                         _sectionTitle('Qualifications'),
@@ -155,14 +147,14 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
                         const SizedBox(height: 32),
                         _sectionTitle('Location'),
                         Text(locationAddress, style: const TextStyle(
-                          color:  Color(0xFFDEE3E3),
-                          fontSize: 13,
+                          color: Color(0xFFDEE3E3),
+                          fontSize: 14,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400,
-                          )),
+                          letterSpacing: -0.3,
+                        )),
                         const SizedBox(height: 16),
                         
-                        // --- 수정 3: 지도 표시 설정 최적화 ---
                         Container(
                           width: double.infinity,
                           height: 172,
@@ -171,10 +163,8 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
                             borderRadius: BorderRadius.circular(15),
                             child: FlutterMap(
                               options: const MapOptions(
-                                initialCenter: locationLatLng, // center -> initialCenter로 변경 (v6+)
-                                initialZoom: 17, // zoom -> initialZoom로 변경 (v6+)
-                                maxZoom: 18,    // 사용자가 직접 확대할 수 있는 최대치 설정 (선택사항)
-                                minZoom: 5,     // 최소 축소치 설정 (선택사항)
+                                initialCenter: locationLatLng,
+                                initialZoom: 15,
                               ),
                               children: [
                                 TileLayer(
@@ -207,7 +197,8 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
     );
   }
 
-  // --- 나머지 Helper Widgets (_hashTag, _bulletPoint 등)은 동일하게 유지 ---
+  // --- 기존 Helper Widgets ---
+
   Widget _buildApplyButton(Color btnColor, Color bgColor) {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -222,7 +213,7 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
         ),
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 52,
           child: ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
@@ -234,8 +225,9 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
               color: Colors.black,
               fontSize: 16,
               fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w600,
-              )),
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.4,
+            )),
           ),
         ),
       ),
@@ -245,24 +237,47 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
   Widget _sectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+      child: Text(title, style: const TextStyle(
+        color: Colors.white,
+        fontSize: 18,
+        fontFamily: 'Pretendard',
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      )),
     );
   }
 
-  Widget _bulletPoint(String text, Color textColor) {
+Widget _bulletPoint(String text, Color textColor) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: 6), // 항목 간 간격
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start, // 상단 정렬 유지
         children: [
-          const Padding(padding: EdgeInsets.only(top: 8), child: Icon(Icons.circle, size: 4, color: Colors.white)),
-          const SizedBox(width: 10),
-          Expanded(child: Text(text, style: const TextStyle(
-            color: Color(0xFFDEE3E3),
-            fontSize: 13,
-            fontFamily: 'Pretendard',
-            fontWeight: FontWeight.w400,
-            ))),
+          // 점(Bullet) 부분: 컨테이너로 감싸서 텍스트의 첫 줄 높이에 맞춤
+          Container(
+            margin: const EdgeInsets.only(top: 8), // 텍스트 첫 줄 중앙에 오도록 미세 조정
+            width: 4,
+            height: 4,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 12),
+          // 텍스트 부분
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 14,
+                fontFamily: 'Pretendard',
+                fontWeight: FontWeight.w400,
+                height: 1.4, // 행간을 주어 가독성 확보 (점과의 정렬 기준이 됨)
+                letterSpacing: -0.3,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -270,17 +285,34 @@ class _SeekerHomeJobDetailScreenState extends State<SeekerHomeJobDetailScreen> {
 
   Widget _statusTag(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
-      child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
+      child: Text(text, style: const TextStyle(
+        color: Colors.white, 
+        fontSize: 11, 
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+      )),
     );
   }
 
   Widget _hashTag(String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      decoration: BoxDecoration(border: Border.all(color: Colors.white38), borderRadius: BorderRadius.circular(20)),
-      child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 13)),
+      decoration: ShapeDecoration(
+        color: const Color(0xFF011637),
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(width: 0.50, color: Color(0xFFFFFFFF)),
+          borderRadius: BorderRadius.circular(100),
+        ),
+      ),
+      child: Text(text, style: const TextStyle(
+        color: Colors.white,
+        fontSize: 11,
+        fontFamily: 'Pretendard',
+        fontWeight: FontWeight.w400,
+        letterSpacing: -0.2,
+      )),
     );
   }
 }

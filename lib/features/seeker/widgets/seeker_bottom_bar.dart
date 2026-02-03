@@ -4,6 +4,7 @@ import 'package:workit_app/features/seeker/screens/seeker_home_screen.dart';
 import 'package:workit_app/features/seeker/screens/seeker_resume_screen.dart';
 import 'package:workit_app/features/seeker/screens/seeker_financial_screen.dart';
 import 'package:workit_app/features/seeker/screens/seeker_chat_list_screen.dart';
+import 'package:workit_app/features/seeker/screens/seeker_myworkit_screen.dart';
 
 
 class SeekerBottomBar extends StatefulWidget {
@@ -20,8 +21,8 @@ class _SeekerBottomBarState extends State<SeekerBottomBar> {
     const SeekerHomeScreen(),
     const SeekerResumeScreen(),
     const SeekerFinancialScreen(),
-    const SeekerChatListScreen(),
-    const Center(child: Text("My Workit", style: TextStyle(color: Colors.white))),
+    const SeekerChatsScreen(),
+    const SeekerMyworkitScreen(),
   ];
 
   @override
@@ -43,7 +44,7 @@ class _SeekerBottomBarState extends State<SeekerBottomBar> {
           // 바텀바 자체의 가로 길이를 살짝 줄여서 더 콤팩트하게 만들 수도 있습니다.
           width: screenWidth * 0.94, 
           height: 65,
-          margin: const EdgeInsets.only(bottom: 30),
+          margin: const EdgeInsets.only(bottom: 15),
           decoration: BoxDecoration(
             color: navBarBgColor,
             borderRadius: BorderRadius.circular(35),

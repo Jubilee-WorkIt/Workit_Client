@@ -6,7 +6,7 @@ class SeekerHomeRingScreen extends StatefulWidget {
   @override
   State<SeekerHomeRingScreen> createState() => _SeekerHomeRingScreenState();
 
-  // 1. static 메서드로 정의하여 외부(DetailScreen)에서도 클래스명을 통해 접근 가능하게 수정
+  // 1. 공용 알림 아이템 UI (static)
   static Widget buildNotificationItem({
     required bool isRead,
     required Color backgroundColor,
@@ -18,7 +18,6 @@ class SeekerHomeRingScreen extends StatefulWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: backgroundColor,
-        // 알림 구분 라인
         border: Border(
           bottom: BorderSide(
             color: isRead ? const Color(0xFF1A2C4D) : const Color(0xFFB8D9F2),
@@ -29,13 +28,10 @@ class SeekerHomeRingScreen extends StatefulWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 0),
-            child: Image.asset(
-              isRead ? 'assets/images/read.png' : 'assets/images/unread.png',
-              width: 24,
-              height: 24,
-            ),
+          Image.asset(
+            isRead ? 'assets/images/read.png' : 'assets/images/unread.png',
+            width: 24,
+            height: 24,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -48,7 +44,7 @@ class SeekerHomeRingScreen extends StatefulWidget {
                       "Today's Recommended Part-Time Jobs",
                       style: TextStyle(color: subTextColor, fontSize: 12, fontFamily: 'Pretendard'),
                     ),
-                    const Spacer(), // 시간 텍스트 우측 정렬
+                    const Spacer(),
                     Text(
                       "5 hours ago",
                       style: TextStyle(color: subTextColor, fontSize: 10, fontFamily: 'Pretendard'),
@@ -115,7 +111,6 @@ class _SeekerHomeRingScreenState extends State<SeekerHomeRingScreen> {
             _buildSectionHeader("New notifications", "View all", () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationDetailScreen(isNew: true)));
             }),
-            // static 메서드 호출
             SeekerHomeRingScreen.buildNotificationItem(
               isRead: false,
               backgroundColor: cardBgColor,
@@ -132,12 +127,6 @@ class _SeekerHomeRingScreenState extends State<SeekerHomeRingScreen> {
             _buildSectionHeader("Read notifications", "View all", () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationDetailScreen(isNew: false)));
             }),
-            SeekerHomeRingScreen.buildNotificationItem(
-              isRead: true,
-              backgroundColor: darkBgColor,
-              textColor: Colors.white,
-              subTextColor: const Color(0xFFBCC1C3),
-            ),
             SeekerHomeRingScreen.buildNotificationItem(
               isRead: true,
               backgroundColor: darkBgColor,
@@ -167,10 +156,25 @@ class _SeekerHomeRingScreenState extends State<SeekerHomeRingScreen> {
   }
 }
 
-// 전체보기 상세 화면
-class NotificationDetailScreen extends StatelessWidget {
+// --- 전체보기 상세 화면 (StatefulWidget으로 수정됨) ---
+class NotificationDetailScreen extends StatefulWidget {
   final bool isNew;
   const NotificationDetailScreen({super.key, required this.isNew});
+
+  @override
+  State<NotificationDetailScreen> createState() => _NotificationDetailScreenState();
+}
+
+class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
+  // 2. 개별 아이템의 읽음 상태를 관리하는 리스트
+  late List<bool> readStatusList;
+
+  @override
+  void initState() {
+    super.initState();
+    // 시작 시: 새 알림(isNew=true)이면 전부 false(안읽음), 읽은 알림이면 전부 true(읽음)
+    readStatusList = List.generate(15, (index) => !widget.isNew);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,20 +194,32 @@ class NotificationDetailScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          isNew ? "New notifications" : "Read notifications",
+          widget.isNew ? "New notifications" : "Read notifications",
           style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600, fontFamily: 'Pretendard'),
         ),
         centerTitle: true,
       ),
       body: ListView.builder(
-        itemCount: 15,
+        itemCount: readStatusList.length,
         itemBuilder: (context, index) {
-          // SeekerHomeRingScreen의 static 메서드를 호출하여 오류 해결
-          return SeekerHomeRingScreen.buildNotificationItem(
-            isRead: !isNew,
-            backgroundColor: isNew ? cardBgColor : darkBgColor,
-            textColor: isNew ? Colors.black : Colors.white,
-            subTextColor: isNew ? const Color(0xFF666666) : const Color(0xFFBCC1C3),
+          bool isCurrentRead = readStatusList[index];
+
+          return GestureDetector(
+            // 3. 클릭 시 읽음 처리 로직 추가
+            onTap: () {
+              if (!isCurrentRead) {
+                setState(() {
+                  readStatusList[index] = true;
+                });
+              }
+            },
+            child: SeekerHomeRingScreen.buildNotificationItem(
+              isRead: isCurrentRead,
+              // [중요] 상태에 따라 배경색과 텍스트 색상이 오토로 변경됩니다.
+              backgroundColor: isCurrentRead ? darkBgColor : cardBgColor,
+              textColor: isCurrentRead ? Colors.white : Colors.black,
+              subTextColor: isCurrentRead ? const Color(0xFFBCC1C3) : const Color(0xFF666666),
+            ),
           );
         },
       ),

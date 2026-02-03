@@ -1,6 +1,6 @@
 // seeker_chat_call_screen.dart 파일 내용
 import 'package:flutter/material.dart';
-import 'package:workit_app/features/seeker/screens/seeker_chat_call_screen.dart';
+// import 'package:workit_app/features/seeker/screens/seeker_chat_call_screen.dart';
 
 class SeekerChatCallScreen extends StatelessWidget {
   final String name;

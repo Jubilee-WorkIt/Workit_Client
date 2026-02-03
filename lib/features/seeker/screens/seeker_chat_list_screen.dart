@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'seeker_chat_search_screen.dart';
 import 'seeker_chat_detail_screen.dart';
 
-class SeekerChatListScreen extends StatefulWidget {
-  const SeekerChatListScreen({super.key});
+class SeekerChatsScreen extends StatefulWidget {
+  const SeekerChatsScreen({super.key});
 
   @override
-  State<SeekerChatListScreen> createState() => _SeekerChatListScreenState();
+  State<SeekerChatsScreen> createState() => _SeekerChatsScreenState();
 }
 
-class _SeekerChatListScreenState extends State<SeekerChatListScreen> {
+class _SeekerChatsScreenState extends State<SeekerChatsScreen> {
   // 현재 선택된 필터 상태 관리
   String selectedFilter = "All";
   final List<String> filters = ["All", "Unread", "In Progress", "Urgent", "Completed"];
@@ -21,7 +21,7 @@ class _SeekerChatListScreenState extends State<SeekerChatListScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 70, bottom: 150),
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 70, bottom: 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -46,31 +46,44 @@ class _SeekerChatListScreenState extends State<SeekerChatListScreen> {
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          "Chats",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontFamily: 'Pretendard',
-            fontWeight: FontWeight.w600,
-          ),
+Widget _buildTopBar(BuildContext context) {
+  return Row(
+    // 양 끝으로 배치하기 위해 spaceBetween 사용
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      const Text(
+        "Chats",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontFamily: 'Pretendard',
+          fontWeight: FontWeight.w600,
         ),
-        IconButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SeekerChatSearchScreen()),
-          ),
-          icon: Image.asset('assets/images/chats_search.png', width: 22, height: 22),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
-      ],
-    );
-  }
+      ),
+      // 돋보기 아이콘
+      IconButton(
+        onPressed: () => Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const SeekerChatSearchScreen()),
+  ),
+  // [핵심] 아이콘 이미지 설정
+  icon: Image.asset(
+    'assets/images/chats_search.png', 
+    width: 17.42, 
+    height: 17.42,
+  ),
+  // [핵심] 모든 패딩과 제약 조건을 제거하여 이미지 크기에 딱 맞춤
+  padding: EdgeInsets.zero,
+  constraints: const BoxConstraints(), 
+  visualDensity: VisualDensity.compact, // 시각적 여백 최소화
+  style: IconButton.styleFrom(
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap, // 터치 영역을 아이콘 크기로 압축
+  ),
+)
+    ],
+  );
+}
 
 Widget _buildFilterSection() {
   return SizedBox(

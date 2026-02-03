@@ -153,6 +153,7 @@ class _SeekerChatDetailScreenState extends State<SeekerChatDetailScreen> {
 
   // 메뉴 사이 구분선
   Widget _buildActionDivider() {
+    // ignore: deprecated_member_use
     return Divider(color: Colors.white.withOpacity(0.05), height: 1, indent: 20, endIndent: 20);
   }
 
@@ -182,6 +183,7 @@ class _SeekerChatDetailScreenState extends State<SeekerChatDetailScreen> {
               ),
             ),
             const Spacer(),
+            // ignore: deprecated_member_use
             Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.2), size: 20),
           ],
         ),

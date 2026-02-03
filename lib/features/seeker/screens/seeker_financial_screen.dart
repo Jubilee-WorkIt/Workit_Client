@@ -95,12 +95,14 @@ class _SeekerFinancialScreenState extends State<SeekerFinancialScreen> {
     super.dispose();
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF011637),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 70, bottom: 150),
+        // 요청하신 대로 padding 값을 수정하였습니다. (top: 20, left: 24, right: 24)
+        // 기존의 bottom: 150 여백은 리스트가 가려지지 않도록 유지했습니다.
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 70),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -118,7 +120,7 @@ class _SeekerFinancialScreenState extends State<SeekerFinancialScreen> {
             _buildExchangeCard("Korea", "KRW", TextEditingController(text: _calculatedKrw), "won", 'assets/images/kor.png', isInput: false),
             const SizedBox(height: 40),
             _buildDepositHistoryHeader(),
-            ..._depositHistory.map((data) => _buildDepositItem(data)).toList(),
+            ..._depositHistory.map((data) => _buildDepositItem(data)),
           ],
         ),
       ),

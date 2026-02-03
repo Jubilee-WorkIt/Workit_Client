@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:workit_app/features/seeker/screens/seeker_home_job_detail_screen.dart';
 import 'package:workit_app/features/seeker/screens/seeker_home_search_screen.dart';
 import 'package:workit_app/features/seeker/screens/seeker_home_ring_screen.dart';
+import 'package:workit_app/features/seeker/screens/seeker_home_menu_screen.dart';
 
 class SeekerHomeScreen extends StatefulWidget {
   const SeekerHomeScreen({super.key});
@@ -40,7 +41,7 @@ class _SeekerHomeScreenState extends State<SeekerHomeScreen> {
           }),
           // 3. more(메뉴) 클릭 시 이동
           _appBarIcon('assets/images/menu.png', () {
-            // Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekeMenuScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekerHomeMenuScreen()));
           }),
           const SizedBox(width: 10),
         ],

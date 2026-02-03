@@ -118,7 +118,7 @@ class _SeekerHomeSearchScreenState extends State<SeekerHomeSearchScreen> {
                     return _buildChip(entry.value, true, () {
                       setState(() => recommendedSearches.removeAt(entry.key));
                     });
-                  }).toList(),
+                  }),
                   
                   // --- 수정사항: 화살표를 이미지로 교체 ---
                   GestureDetector(
