@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class SeekerChatSearchScreen extends StatefulWidget {
-  const SeekerChatSearchScreen({super.key});
+class SeekerMyWorkitSearchScreen extends StatefulWidget {
+  const SeekerMyWorkitSearchScreen({super.key});
 
   @override
-  State<SeekerChatSearchScreen> createState() => _SeekerChatSearchScreenState();
+  State<SeekerMyWorkitSearchScreen> createState() => _SeekerMyWorkitSearchScreenState();
 }
 
-class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
+class _SeekerMyWorkitSearchScreenState extends State<SeekerMyWorkitSearchScreen> {
   // 2번 수정: 검색 기록을 담을 리스트 (검색했던 내용들이 보임)
   List<String> recentSearches = ["Name", "Name", "Name", "Name"];
   final TextEditingController _searchController = TextEditingController();
@@ -88,7 +88,7 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Recent search terms",
+                  "Recent",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -147,7 +147,6 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
               fontSize: 12,
               fontFamily: 'Pretendard',
               fontWeight: FontWeight.w400,
-              letterSpacing: -0.1,
             ),
           ),
           const SizedBox(width: 9),

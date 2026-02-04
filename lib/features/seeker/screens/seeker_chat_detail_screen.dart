@@ -23,6 +23,9 @@ class SeekerChatDetailScreen extends StatefulWidget {
 class _SeekerChatDetailScreenState extends State<SeekerChatDetailScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  
+  bool _isMenuOpen = false;
+  final List<int> _selectedPhotoIndices = [];
 
   final List<ChatMessage> _messages = [
     ChatMessage(text: "Hello, Annie! I'm Julee.", isMe: false, timestamp: DateTime(2026, 1, 26, 14, 4)),
@@ -36,7 +39,12 @@ class _SeekerChatDetailScreenState extends State<SeekerChatDetailScreen> {
     setState(() {
       _messages.add(ChatMessage(text: _controller.text, isMe: true, timestamp: DateTime.now()));
       _controller.clear();
+      _isMenuOpen = false;
     });
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(_scrollController.position.maxScrollExtent,
@@ -45,249 +53,182 @@ class _SeekerChatDetailScreenState extends State<SeekerChatDetailScreen> {
     });
   }
 
-  // 1. [+] 버튼 클릭 시 하단 메뉴
-  void _showAddMenu() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF1A2C4D),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildMenuIcon(Icons.camera_alt, "Camera"),
-                  _buildMenuIcon(Icons.photo, "Gallery"),
-                  _buildMenuIcon(Icons.folder, "File"),
-                  _buildMenuIcon(Icons.location_on, "Location"),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void _toggleMenu() {
+    setState(() {
+      _isMenuOpen = !_isMenuOpen;
+    });
+    if (_isMenuOpen) {
+      FocusScope.of(context).unfocus();
+      _scrollToBottom();
+    }
   }
 
-  Widget _buildMenuIcon(IconData icon, String label) {
-    return Column(
-      children: [
-        Container(
-          width: 60, height: 60,
-          decoration: const BoxDecoration(color: Color(0xFF354E6B), shape: BoxShape.circle),
-          child: Icon(icon, color: Colors.white, size: 28),
-        ),
-        const SizedBox(height: 8),
-        Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'Pretendard')),
-      ],
-    );
+  void _onPhotoTap(int index) {
+    setState(() {
+      if (_selectedPhotoIndices.contains(index)) {
+        _selectedPhotoIndices.remove(index);
+      } else {
+        _selectedPhotoIndices.add(index);
+      }
+    });
   }
 
-// 2. [more] 버튼 클릭 시 메뉴 (신고, 차단, 나가기)
-  void _showMoreMenu() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent, // 배경 투명 (커스텀 디자인을 위해)
-      builder: (context) => Container(
-        margin: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A2C4D), // 기존 다크 네이비
-          borderRadius: BorderRadius.circular(24),
-          // ignore: deprecated_member_use
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1), // 부드러운 스트로크
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 12),
-              // 상단 핸들러 바
-              Container(
-                width: 40, height: 4,
-                decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2)),
-              ),
-              const SizedBox(height: 8),
-              
-              _buildActionTile(
-                title: "Report", 
-                icon: Icons.report_problem_outlined,
-                onTap: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("User has been reported.")),
-                  );
-                }
-              ),
-              _buildActionDivider(),
-              _buildActionTile(
-                title: "Block", 
-                icon: Icons.block,
-                isDestructive: true,
-                onTap: () {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("User has been blocked.")),
-                  );
-                }
-              ),
-              _buildActionDivider(),
-              _buildActionTile(
-                title: "Leave Chatroom", 
-                icon: Icons.exit_to_app,
-                onTap: () {
-                  Navigator.pop(context); // 시트 닫기
-                  _showExitDialog(); // 다이얼로그 띄우기
-                }
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // 메뉴 사이 구분선
-  Widget _buildActionDivider() {
-    // ignore: deprecated_member_use
-    return Divider(color: Colors.white.withOpacity(0.05), height: 1, indent: 20, endIndent: 20);
-  }
-
-  // 개선된 메뉴 타일 디자인
-  Widget _buildActionTile({
-    required String title, 
-    required IconData icon, 
-    bool isDestructive = false, 
-    VoidCallback? onTap
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        child: Row(
-          children: [
-            Icon(icon, color: isDestructive ? Colors.redAccent : Colors.white70, size: 22),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: TextStyle(
-                color: isDestructive ? Colors.redAccent : Colors.white,
-                fontSize: 16,
-                fontFamily: 'Pretendard',
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Spacer(),
-            // ignore: deprecated_member_use
-            Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.2), size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 나가기 확인 다이얼로그 (실제 나가기 기능 포함)
-  void _showExitDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: const Color(0xFF1A2C4D),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          // ignore: deprecated_member_use
-          side: BorderSide(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-              child: Column(
-                children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 40),
-                  SizedBox(height: 16),
-                  Text(
-                    "Leave Chatroom?",
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    "Are you sure you want to leave?\nYour chat history will be deleted.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xFF9DA8B7), fontSize: 14, height: 1.5),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(color: Colors.white10, height: 1),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel", style: TextStyle(color: Colors.white70, fontSize: 16)),
-                  ),
-                ),
-                Container(width: 1, height: 50, color: Colors.white10),
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context); // 다이얼로그 닫기
-                      Navigator.pop(context); // 현재 채팅 상세 화면(SeekerChatDetailScreen) 닫기 -> 목록으로 이동
-                    },
-                    child: const Text("Leave", style: TextStyle(color: Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
     const Color backgroundColor = Color(0xFF011637);
     return Scaffold(
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: true,
-      body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 70),
-        child: Column(
-          children: [
-            _buildCustomAppBar(),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.only(bottom: 150),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index];
-                  bool showDateDivider = index == 0 || (_messages[index - 1].dateKey != message.dateKey);
-                  double bottomPadding = (index < _messages.length - 1 && _messages[index].isMe == _messages[index + 1].isMe) ? 8 : 22;
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20, top: 70),
+            child: Column(
+              children: [
+                _buildCustomAppBar(),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: EdgeInsets.only(bottom: _isMenuOpen ? 380 : 120),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      bool showDateDivider = index == 0 || (_messages[index - 1].dateKey != message.dateKey);
+                      double bottomPadding = (index < _messages.length - 1 && _messages[index].isMe == _messages[index + 1].isMe) ? 8 : 22;
 
-                  return Column(
-                    children: [
-                      if (showDateDivider) _buildDateDivider(message.timestamp),
-                      Padding(padding: EdgeInsets.only(bottom: bottomPadding), child: _buildBubble(message)),
-                    ],
+                      return Column(
+                        children: [
+                          if (showDateDivider) _buildDateDivider(message.timestamp),
+                          Padding(padding: EdgeInsets.only(bottom: bottomPadding), child: _buildBubble(message)),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(bottom: 0, left: 0, right: 0, child: _buildAnimatedBottomArea()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnimatedBottomArea() {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      height: _isMenuOpen ? 420 : 110,
+      decoration: const BoxDecoration(color: Color(0xFF011637)),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: _toggleMenu,
+                  child: Image.asset('assets/images/add.png', width: 21, height: 21),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    height: 44,
+                    alignment: Alignment.center, // 텍스트 필드 정렬 보조
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: const Color(0xFF4E5B70)),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      onTap: () => setState(() => _isMenuOpen = false),
+                      style: const TextStyle(color: Colors.white, fontSize: 14, fontFamily: 'Pretendard'),
+                      textAlignVertical: TextAlignVertical.center, // 수직 중앙 정렬
+                      decoration: const InputDecoration(
+                        hintText: "Write a message here",
+                        hintStyle: TextStyle(color: Color(0xFFBCC1C3), fontSize: 14),
+                        border: InputBorder.none,
+                        isCollapsed: true, // 내부 패딩 제어를 위해 설정
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16), 
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: _sendMessage, 
+                  child: Image.asset('assets/images/send.png', width: 28, height: 28),
+                ),
+              ],
+            ),
+          ),
+          if (_isMenuOpen)
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4, mainAxisSpacing: 8, crossAxisSpacing: 8,
+                ),
+                itemCount: 20,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        decoration: BoxDecoration(color: const Color(0xFFBCC1C3), borderRadius: BorderRadius.circular(8)),
+                        child: Center(child: Image.asset('assets/images/camera.png', width: 30, height: 30)),
+                      ),
+                    );
+                  }
+                  
+                  bool isSelected = _selectedPhotoIndices.contains(index);
+                  int selectionOrder = _selectedPhotoIndices.indexOf(index) + 1;
+
+                  return GestureDetector(
+                    onTap: () => _onPhotoTap(index),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(8),
+                        border: isSelected ? Border.all(color: const Color(0xFF43C7FF), width: 2) : null,
+                        image: const DecorationImage(image: NetworkImage("https://via.placeholder.com/150"), fit: BoxFit.cover),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 5, right: 5,
+                            child: Container(
+                              width: 22, height: 22,
+                              decoration: BoxDecoration(
+                                // 선택 여부에 따른 배경색 변경
+                                // ignore: deprecated_member_use
+                                color: isSelected ? const Color(0xFF43C7FF) : Colors.black.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                                // 선택되지 않았을 때만 회색 테두리 (레퍼런스 스타일)
+                                border: Border.all(
+                                  color: isSelected ? Colors.white : const Color(0xFFBCC1C3), 
+                                  width: 1.5
+                                ),
+                              ),
+                              child: isSelected 
+                                ? Center(child: Text("$selectionOrder", style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)))
+                                : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
             ),
-          ],
-        ),
+        ],
       ),
-      bottomSheet: Container(color: backgroundColor, child: SafeArea(child: _buildInputArea())),
     );
   }
 
+  // --- 기존 UI 유지 ---
   Widget _buildDateDivider(DateTime dateTime) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24),
@@ -307,62 +248,34 @@ class _SeekerChatDetailScreenState extends State<SeekerChatDetailScreen> {
   Widget _buildCustomAppBar() {
     return Row(
       children: [
-        // 1. 왼쪽 영역 (뒤로가기 + 숫자)
         Expanded(
           flex: 1,
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start, // 왼쪽 정렬
               children: [
-                Image.asset('assets/images/chats_arrow_left.png', 
-                  width: 24, height: 24, 
-                  errorBuilder: (c, e, s) => const Icon(Icons.arrow_back, color: Colors.white)),
+                Image.asset('assets/images/chats_arrow_left.png', width: 24, height: 24),
                 const SizedBox(width: 8),
-                const Text("12", style: TextStyle(
-                  color: Colors.white, 
-                  fontSize: 14, 
-                  fontFamily: 'Pretendard'
-                )),
+                const Text("12", style: TextStyle(color: Colors.white, fontSize: 14)),
               ],
             ),
           ),
         ),
-
-        // 2. 중앙 영역 (이름)
         Expanded(
-          flex: 2, // 이름을 위해 더 넓은 공간 할당
-          child: Text(
-            widget.name,
-            textAlign: TextAlign.center, // 텍스트 중앙 정렬
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          flex: 2,
+          child: Text(widget.name, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
         ),
-
-        // 3. 오른쪽 영역 (전화 + 더보기)
         Expanded(
           flex: 1,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.end, // 오른쪽 정렬
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SeekerChatCallScreen(name: widget.name))),
-                child: Image.asset('assets/images/call.png', 
-                  width: 24, height: 24, 
-                  errorBuilder: (c, e, s) => const Icon(Icons.call, color: Colors.white)),
+                child: Image.asset('assets/images/call.png', width: 24, height: 24),
               ),
               const SizedBox(width: 10),
-              GestureDetector(
-                onTap: _showMoreMenu,
-                child: Image.asset('assets/images/more.png', 
-                  width: 24, height: 24, 
-                  errorBuilder: (c, e, s) => const Icon(Icons.more_vert, color: Colors.white)),
-              ),
+              GestureDetector(onTap: _showMoreMenu, child: Image.asset('assets/images/more.png', width: 24, height: 24)),
             ],
           ),
         ),
@@ -396,54 +309,44 @@ class _SeekerChatDetailScreenState extends State<SeekerChatDetailScreen> {
     );
   }
 
-  Widget _buildInputArea() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 60),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: _showAddMenu,
-            child: Image.asset('assets/images/add.png', width: 28, height: 28, 
-              errorBuilder: (c, e, s) => const Icon(Icons.add_circle, color: Colors.white)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              height: 44,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: const Color(0xFF4E5B70)),
-              ),
-              child: TextField(
-                controller: _controller,
-                style: const TextStyle(color: Colors.white, fontSize: 14, fontFamily: 'Pretendard'),
-                // [수정 포인트 1] 텍스트를 수직 중앙 정렬합니다.
-                textAlignVertical: TextAlignVertical.center, 
-                decoration: const InputDecoration(
-                  hintText: "Write a message here",
-                  hintStyle: TextStyle(
-                    color:  Color(0xFFBCC1C3),
-                    fontSize: 14,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  border: InputBorder.none,
-                  isDense: true,
-                  contentPadding: EdgeInsets.only(left: 16, right: 16, bottom: -11), 
-                ),
-                onSubmitted: (_) => _sendMessage(),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: _sendMessage, 
-            child: Image.asset('assets/images/send.png', width: 28, height: 28, 
-              errorBuilder: (c, e, s) => const Icon(Icons.send, color: Colors.white)),
-          ),
-        ],
+  void _showMoreMenu() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: const Color(0xFF1A2C4D), borderRadius: BorderRadius.circular(24)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 20),
+            _buildActionTile(title: "Report", icon: Icons.report_problem_outlined, onTap: () => Navigator.pop(context)),
+            _buildActionTile(title: "Block", icon: Icons.block, isDestructive: true, onTap: () => Navigator.pop(context)),
+            _buildActionTile(title: "Leave Chatroom", icon: Icons.exit_to_app, onTap: () { Navigator.pop(context); _showExitDialog(); }),
+            const SizedBox(height: 12),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _buildActionTile({required String title, required IconData icon, bool isDestructive = false, VoidCallback? onTap}) {
+    return ListTile(
+      leading: Icon(icon, color: isDestructive ? Colors.redAccent : Colors.white70),
+      title: Text(title, style: TextStyle(color: isDestructive ? Colors.redAccent : Colors.white)),
+      onTap: onTap,
+    );
+  }
+
+  void _showExitDialog() {
+    showDialog(context: context, builder: (context) => AlertDialog(
+      backgroundColor: const Color(0xFF1A2C4D),
+      title: const Text("Leave?", style: TextStyle(color: Colors.white)),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+        TextButton(onPressed: () { Navigator.pop(context); Navigator.pop(context); }, child: const Text("Leave", style: TextStyle(color: Colors.redAccent))),
+      ],
+    ));
   }
 }
 
@@ -461,25 +364,34 @@ class SeekerChatCallScreen extends StatelessWidget {
           const Spacer(flex: 2),
           const CircleAvatar(radius: 60, backgroundColor: Colors.white),
           const SizedBox(height: 24),
-          Text(name, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold, fontFamily: 'Pretendard')),
+          Text(name, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          const Text("Calling...", style: TextStyle(color: Color(0xFF43C7FF), fontSize: 16, fontFamily: 'Pretendard')),
+          const Text("Calling...", style: TextStyle(color: Color(0xFF43C7FF), fontSize: 16)),
           const Spacer(flex: 3),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildCallBtn(Icons.mic_off, "Mute"),
-              _buildCallBtn(Icons.videocam, "Video"),
-              _buildCallBtn(Icons.volume_up, "Speaker"),
+              _buildCallBtn('assets/images/mute.png', "Mute"),
+              _buildCallBtn('assets/images/video.png', "Video"),
+              _buildCallBtn('assets/images/speaker.png', "Speaker"),
             ],
           ),
-          const SizedBox(height: 60),
+          const SizedBox(height: 80),
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
-              child: const Icon(Icons.call_end, color: Colors.white, size: 32),
+              // [수정] 종료 버튼도 다른 버튼들과 비율을 맞추기 위해 크기 조정
+              padding: const EdgeInsets.all(24), 
+              decoration: const BoxDecoration(
+                color: Color(0xFFFF5252), // 레퍼런스의 레드 컬러
+                shape: BoxShape.circle
+              ),
+              child: Image.asset(
+                'assets/images/call_end.png', 
+                width: 40, 
+                height: 40,
+                errorBuilder: (c, e, s) => const Icon(Icons.call_end, color: Colors.white, size: 40)
+              ),
             ),
           ),
           const SizedBox(height: 80),
@@ -488,11 +400,31 @@ class SeekerChatCallScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCallBtn(IconData icon, String label) => Column(
+  Widget _buildCallBtn(String assetPath, String label) => Column(
     children: [
-      Container(padding: const EdgeInsets.all(12), decoration: const BoxDecoration(color: Color(0xFF1A2C4D), shape: BoxShape.circle), child: Icon(icon, color: Colors.white)),
-      const SizedBox(height: 8),
-      Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Pretendard')),
+      Container(
+        // [수정] 패딩을 늘려 원의 크기를 레퍼런스처럼 크게 만듭니다.
+        padding: const EdgeInsets.all(20), 
+        decoration: const BoxDecoration(
+          color: Color(0xFF354E6B), // 레퍼런스의 밝은 네이비 톤 반영
+          shape: BoxShape.circle
+        ),
+        child: Image.asset(
+          assetPath, 
+          width: 36, 
+          height: 36,
+          errorBuilder: (c, e, s) => const Icon(Icons.error, color: Colors.white, size: 36),
+        ),
+      ),
+      const SizedBox(height: 12), // 아이콘과 글자 사이 간격 약간 확대
+      Text(
+        label, 
+        style: const TextStyle(
+          color: Colors.white, 
+          fontSize: 14, // 글자 크기 가독성 있게 조정
+          fontFamily: 'Pretendard'
+        )
+      ),
     ],
   );
 }

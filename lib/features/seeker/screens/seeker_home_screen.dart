@@ -25,90 +25,103 @@ class _SeekerHomeScreenState extends State<SeekerHomeScreen> {
 
     return Scaffold(
       backgroundColor: darkBgColor,
-      appBar: AppBar(
-        backgroundColor: darkBgColor,
-        elevation: 0,
-        centerTitle: false,
-        title: Image.asset('assets/images/logo.png', width: 121, height: 22),
-        actions: [
-          // 1. 돋보기(검색) 클릭 시 이동
-          _appBarIcon('assets/images/search.png', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekerHomeSearchScreen()));
-          }),
-          // 2. 종(알림) 클릭 시 이동
-          _appBarIcon('assets/images/ring.png', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekerHomeRingScreen()));
-          }),
-          // 3. more(메뉴) 클릭 시 이동
-          _appBarIcon('assets/images/menu.png', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekerHomeMenuScreen()));
-          }),
-          const SizedBox(width: 10),
-        ],
-      ),
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 150),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _locationHeader(),
-              ),
-              const SizedBox(height: 15),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildBanner(),
-              ),
-              const SizedBox(height: 20),
-              _buildFilterSection(),
-              const SizedBox(height: 48),
+      // [수정] SafeArea를 제거하여 마이페이지와 여백 계산 방식을 통일합니다.
+      body: SingleChildScrollView(
+        // [수정] 마이페이지와 동일한 70px 상단 여백 적용
+        padding: const EdgeInsets.only(left: 0, right: 0, top: 70, bottom: 150),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. 커스텀 홈 헤더 (AppBar 대체)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildHomeHeader(),
+            ),
+            const SizedBox(height: 25),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _sectionHeader('Popular job postings right now', '$_popularPageIndex / $_totalPages'),
-              ),
-              const SizedBox(height: 24),
-              _buildTripleCardPageView(
-                context: context,
-                onPageChanged: (index) => setState(() => _popularPageIndex = index + 1),
-              ),
+            // 2. 위치 정보 섹션
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _locationHeader(),
+            ),
+            const SizedBox(height: 15),
 
-              const SizedBox(height: 40),
+            // 3. 배너 섹션
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildBanner(),
+            ),
+            const SizedBox(height: 20),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _sectionHeader("Today's Latest Job Postings", '$_latestPageIndex / $_totalPages'),
-              ),
-              const SizedBox(height: 24),
-              _buildTripleCardPageView(
-                context: context,
-                onPageChanged: (index) => setState(() => _latestPageIndex = index + 1),
-                isHotDefault: false,
-              ),
-            ],
-          ),
+            // 4. 필터 섹션
+            _buildFilterSection(),
+            const SizedBox(height: 48),
+
+            // 5. 인기 공고 섹션
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _sectionHeader('Popular job postings right now', '$_popularPageIndex / $_totalPages'),
+            ),
+            const SizedBox(height: 24),
+            _buildTripleCardPageView(
+              context: context,
+              onPageChanged: (index) => setState(() => _popularPageIndex = index + 1),
+            ),
+
+            const SizedBox(height: 40),
+
+            // 6. 최신 공고 섹션
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _sectionHeader("Today's Latest Job Postings", '$_latestPageIndex / $_totalPages'),
+            ),
+            const SizedBox(height: 24),
+            _buildTripleCardPageView(
+              context: context,
+              onPageChanged: (index) => setState(() => _latestPageIndex = index + 1),
+              isHotDefault: false,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // --- 수정된 부분: 클릭 가능하도록 제스처 추가 ---
+  // --- 커스텀 홈 헤더 (로고 & 아이콘들) ---
+  Widget _buildHomeHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Image.asset('assets/images/logo.png', width: 121, height: 22),
+        Row(
+          children: [
+            _appBarIcon('assets/images/search.png', () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekerHomeSearchScreen()));
+            }),
+            _appBarIcon('assets/images/ring.png', () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekerHomeRingScreen()));
+            }),
+            _appBarIcon('assets/images/menu.png', () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SeekerHomeMenuScreen()));
+            }),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _appBarIcon(String path, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque, // 터치 영역 최적화
+      behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5), // 간격을 조금 넓혔습니다.
+        padding: const EdgeInsets.only(left: 12),
         child: Image.asset(path, width: 22, height: 22),
       ),
     );
   }
 
-  // --- 기존 위젯 로직들 ---
+  // --- 기존 위젯 로직들 (유지) ---
   Widget _buildTripleCardPageView({required BuildContext context, required Function(int) onPageChanged, bool isHotDefault = true}) {
     return SizedBox(
       height: 520,
@@ -168,11 +181,23 @@ class _SeekerHomeScreenState extends State<SeekerHomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Posting title', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                          const Text('Posting title', style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.2,
+                            )),
                           _statusTag(isHot ? 'HOT' : 'NEW', isHot ? const Color(0xFF43C7FF) : const Color(0xFF009DFF)),
                         ],
                       ),
-                      const Text('Company name', style: TextStyle(fontSize: 13, color: Colors.black)),
+                      const Text('Company name', style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 13,
+                        fontFamily: 'Pretendard',
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: -0.2,
+                        )),
                       const SizedBox(height: 10),
                       _cardIconInfo('assets/images/pin.png', 'Location'),
                       _cardIconInfo('assets/images/clock.png', 'Amount'),
@@ -252,7 +277,13 @@ class _SeekerHomeScreenState extends State<SeekerHomeScreen> {
       child: Row(children: [
         Image.asset(path, width: 14, height: 14, color: const Color(0xFFADB5BD)),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(fontSize: 12, color: Color(0xFF707676)))
+        Text(text, style: const TextStyle(
+          color:  Color(0xFF707676),
+          fontSize: 12,
+          fontFamily: 'Pretendard',
+          fontWeight: FontWeight.w400,
+          letterSpacing: -0.2,
+          ))
       ]),
     );
   }
@@ -283,39 +314,13 @@ class _SeekerHomeScreenState extends State<SeekerHomeScreen> {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: const Color(0xFFE9ECED), borderRadius: BorderRadius.circular(20)),
-      child: Text(text, style: const TextStyle(color: Color(0xFF929696), fontSize: 10)),
+      child: Text(text, style: const TextStyle(
+        color:  Color(0xFF707676),
+        fontSize: 10,
+        fontFamily: 'Pretendard',
+        fontWeight: FontWeight.w400,
+        letterSpacing: -0.1,
+        )),
     );
   }
-}
-
-// --- 임시 이동 페이지들 ---
-
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFF001533),
-    appBar: AppBar(title: const Text("Search"), backgroundColor: Colors.transparent),
-    body: const Center(child: Text("Search Screen", style: TextStyle(color: Colors.white))),
-  );
-}
-
-class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFF001533),
-    appBar: AppBar(title: const Text("Notifications"), backgroundColor: Colors.transparent),
-    body: const Center(child: Text("Notification Screen", style: TextStyle(color: Colors.white))),
-  );
-}
-
-class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFF001533),
-    appBar: AppBar(title: const Text("Menu"), backgroundColor: Colors.transparent),
-    body: const Center(child: Text("Menu Screen", style: TextStyle(color: Colors.white))),
-  );
 }

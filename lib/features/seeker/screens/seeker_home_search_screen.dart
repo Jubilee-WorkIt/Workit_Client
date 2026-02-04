@@ -170,7 +170,8 @@ class _SeekerHomeSearchScreenState extends State<SeekerHomeSearchScreen> {
               color: Colors.black, 
               fontSize: 12, 
               fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w400
+              fontWeight: FontWeight.w400,
+              letterSpacing: -0.1,
             )
           ),
           if (showClose) ...[
