@@ -95,7 +95,13 @@ class _LoginButton extends StatelessWidget {
         ),
         child: const Text(
           'Sign In',
-          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
+            ),
         ),
       ),
     );
@@ -111,7 +117,13 @@ class _SocialDivider extends StatelessWidget {
         Expanded(child: Divider(color: Color(0xFFBCC1C3))),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text('Or sign in with', style: TextStyle(color: Color(0xFFBCC1C3), fontSize: 14)),
+          child: Text('Or sign in with', style: TextStyle(
+            color:  Color(0xFFBCC1C3),
+            fontSize: 14,
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w400,
+            letterSpacing: 0.1,
+            )),
         ),
         Expanded(child: Divider(color: Color(0xFFBCC1C3))),
       ],
@@ -166,7 +178,13 @@ class _LoginPrompt extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have an account?", style: TextStyle(color: Color(0xFFBCC1C3), fontSize: 14)),
+        const Text("Don't have an account?", style: TextStyle(
+          color:  Color(0xFFBCC1C3),
+          fontSize: 14,
+          fontFamily: 'Pretendard',
+          fontWeight: FontWeight.w400,
+          letterSpacing: 0.01,
+          )),
         const SizedBox(width: 8),
         GestureDetector(
           onTap: () => Navigator.pushReplacement(
@@ -175,7 +193,13 @@ class _LoginPrompt extends StatelessWidget {
           ),
           child: const Text(
             'Sign Up',
-            style: TextStyle(color: Color(0xFF43C7FF), fontSize: 16, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              color:  Color(0xFF43C7FF),
+              fontSize: 16,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.01,
+              ),
           ),
         ),
       ],

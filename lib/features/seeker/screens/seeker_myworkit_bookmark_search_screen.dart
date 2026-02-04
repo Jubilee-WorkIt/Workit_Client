@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 
-class SeekerChatSearchScreen extends StatefulWidget {
-  const SeekerChatSearchScreen({super.key});
+class SeekerMyWorkitBookmarkedSearchScreen extends StatefulWidget {
+  const SeekerMyWorkitBookmarkedSearchScreen({super.key});
 
   @override
-  State<SeekerChatSearchScreen> createState() => _SeekerChatSearchScreenState();
+  State<SeekerMyWorkitBookmarkedSearchScreen> createState() => _SeekerMyWorkitBookmarkedSearchScreenState();
 }
 
-class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
-  // 2번 수정: 검색 기록을 담을 리스트 (검색했던 내용들이 보임)
-  List<String> recentSearches = ["Name", "Name", "Name", "Name"];
+class _SeekerMyWorkitBookmarkedSearchScreenState extends State<SeekerMyWorkitBookmarkedSearchScreen> {
+  // 최근 검색 기록 리스트
+  List<String> recentSearches = ["Bookmarked", "name", "name", "name"];
   final TextEditingController _searchController = TextEditingController();
 
-  // 검색 추가 로직
+  // 검색어 제출 시 리스트에 추가 로직
   void _onSearchSubmitted(String value) {
     if (value.trim().isEmpty) return;
     setState(() {
+      // 중복 검색어 방지 (선택 사항): if (recentSearches.contains(value.trim())) recentSearches.remove(value.trim());
       recentSearches.insert(0, value.trim()); // 최신 검색어를 맨 앞으로
       _searchController.clear(); // 입력창 비우기
     });
@@ -36,6 +37,7 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // --- 상단 검색바 영역 ---
             Row(
               children: [
                 GestureDetector(
@@ -58,10 +60,9 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
                           child: TextField(
                             controller: _searchController,
                             style: const TextStyle(color: Colors.white, fontSize: 14),
-                            // 2번 수정: 엔터를 누르면 검색 기록에 남게 함
-                            onSubmitted: _onSearchSubmitted,
+                            onSubmitted: _onSearchSubmitted, // 엔터 키 입력 시 검색
                             decoration: const InputDecoration(
-                              hintText: "Enter your search term",
+                              hintText: "Search in bookmarked", // 힌트 텍스트 수정
                               hintStyle: TextStyle(
                                 color: Color(0xFFBCC1C3),
                                 fontSize: 14,
@@ -84,11 +85,13 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
               ],
             ),
             const SizedBox(height: 32),
+            
+            // --- 최근 검색어 헤더 영역 ---
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Recent search terms",
+                  "Recent",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -97,10 +100,9 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
                   ),
                 ),
                 GestureDetector(
-                  // 3번 수정: Delete all 누르면 리스트 비우기
                   onTap: () {
                     setState(() {
-                      recentSearches.clear();
+                      recentSearches.clear(); // 전체 삭제
                     });
                   },
                   child: const Text(
@@ -116,10 +118,11 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
               ],
             ),
             const SizedBox(height: 16),
+            
+            // --- 최근 검색어 칩(Chip) 영역 ---
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              // 1~2번 수정: 실제 리스트 데이터를 칩으로 보여줌
               children: recentSearches.asMap().entries.map((entry) {
                 return _buildRecentSearchChip(entry.value, entry.key);
               }).toList(),
@@ -130,6 +133,7 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
     );
   }
 
+  // 개별 검색어 칩 위젯
   Widget _buildRecentSearchChip(String label, int index) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -153,9 +157,8 @@ class _SeekerChatSearchScreenState extends State<SeekerChatSearchScreen> {
           const SizedBox(width: 9),
           GestureDetector(
             onTap: () {
-              // 1번 수정: x 이미지 누르면 해당 검색어 삭제
               setState(() {
-                recentSearches.removeAt(index);
+                recentSearches.removeAt(index); // 개별 삭제
               });
             },
             child: Image.asset('assets/images/close.png', width: 12, height: 12),

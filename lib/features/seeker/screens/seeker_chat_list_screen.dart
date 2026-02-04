@@ -165,6 +165,7 @@ Widget _filterChip(String label) {
           fontSize: 12,
           fontFamily: 'Pretendard',
           fontWeight: FontWeight.w400,
+          letterSpacing: -0.6,
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
